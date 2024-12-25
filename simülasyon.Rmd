@@ -1,0 +1,93 @@
+---
+title: "SIMULASYON"
+author: "Senay Şenslı"
+date: "2024-06-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+hellskitchen <- c(11,19,17,17,12,12,13,7,26,9,18,7,17,11,10,7,7,18,10,11)
+summary(hellskitchen)
+std_sapma<- sd(hellskitchen)
+std_sapma
+```
+Verinin dağılımı test etme
+```{r}
+shapiro.test(hellskitchen)
+```
+Histogram 
+```{r}
+hist(hellskitchen, main = "Histogram", xlab = "Satıs", ylab="Frekans", col = "lightblue")
+```
+Poisson dağıldığının test edilmesi
+```{r}
+ks_test <- ks.test(hellskitchen, "ppois", lambda = 12.95)
+print(ks_test)
+```
+Ross'un Ters Dönüşüm Algoritması ile Poisson dağılımı
+
+```{r}
+ross_poisson <- function(lambda, num_samples) {
+  random_numbers <- numeric(num_samples) 
+  for (i in 1:num_samples) {
+    L <- exp(-lambda)
+    k <- 0
+    p <- 1
+    repeat {
+      k <- k + 1
+      u <- runif(1)
+      p <- p * u
+      if (p <= L) break
+    }
+    random_numbers[i] <- k - 1
+  }
+  return(random_numbers)
+}
+lambda <- 12.95  
+num_samples <- 1000  
+
+```
+
+Rasgele sayı üretme 
+```{r}
+random_numbers <- ross_poisson(lambda, num_samples)
+print(random_numbers)
+```
+
+```{r}
+summary(random_numbers)
+mean_r <- mean(random_numbers)
+var_r <- var(random_numbers)
+print(paste("Ortalama satıs: ", mean_r))
+print(paste("Satısların varyansı: ", var_r))
+```
+```{r}
+kar <- 1.20
+num_simulations <- 1000
+days <- 20
+num_simulations
+```
+
+```{r}
+set.seed(123) 
+sim_satis <- matrix(rpois(num_simulations * days, lambda), nrow = num_simulations)
+simulated_revenues <- rowMeans(sim_satis) * kar
+sim_satis
+```
+
+```{r}
+ilkgelir <- mean(hellskitchen)
+simgelir <- mean(simulated_revenues)
+ilkgelir
+simgelir
+```
+```{r}
+
+```
+
